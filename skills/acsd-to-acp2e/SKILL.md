@@ -1,6 +1,6 @@
 ---
 name: acsd-to-acp2e
-description: When invoked with an ACSD issue, create two new ACP2E tickets with values extracted from that ACSD: (1) issue type "Customer Request", (2) issue type "Backport Request". Customer Request gets all fields (Summary, Support Tickets, Customer Names, Project Page, Affects Version/s, customfield_16201, customfield_29601 Business Impact, customfield_15900, customfield_15901); Backport Request gets the same except customfield_18505 (Project Page) is excluded. Fill the Jira Bug Report Template with content from acp2e.md and use that template as the ACP2E description. Also use to read/interpret these fields on any Jira issue.
+description: When invoked with an ACSD issue, create two new ACP2E tickets with values extracted from that ACSD: (1) issue type "Customer Request", (2) issue type "Backport Request". Customer Request gets all fields (Summary, Support Tickets, Customer Names, Project Page, Affects Version/s, Business Impact, Type of Request, Priority from Customer Care, Severity from Customer Care); Backport Request gets the same except customfield_18505 (Project Page) is excluded. Fill the Jira Bug Report Template with content from acp2e.md and use that template as the ACP2E description. Also use to read/interpret these fields on any Jira issue.
 ---
 
 # Jira fields: Support Tickets, Customer Names, Project Page, Affects Version/s
@@ -25,7 +25,7 @@ description: When invoked with an ACSD issue, create two new ACP2E tickets with 
    - `issue_id_or_key`: the ACSD key (e.g. `ACSD-70139`)
    - `fields`: `["summary", "customfield_10802", "customfield_10803", "customfield_18505", "versions", "customfield_16201", "customfield_29601", "customfield_15900", "customfield_15901"]`
    (This requests only those fields from the API; see jira_client.get_issue implementation.)
-2. Extracting from the response: Summary, Support Tickets, Customer Names, Project Page, Affects Version/s, customfield_16201, customfield_29601 (Business Impact), customfield_15900, customfield_15901 (see field IDs below).
+2. Extracting from the response: Summary, Support Tickets, Customer Names, Project Page, Affects Version/s, customfield_16201 (Business Impact), customfield_29601 (Type of Request), customfield_15900 (Priority from Customer Care), customfield_15901 (Severity from Customer Care) (see field IDs below).
 3. Creating **two** ACP2E tickets with **`create_jira_issue`**, using the **same** summary, description, and extracted fields for both. For each ticket:
    - `project_key`: `"ACP2E"`
    - **First ticket:** `issue_type`: `"Customer Request"`
@@ -62,10 +62,10 @@ Do not skip creating the ACP2E tickets when the invocation context is ACSD—cre
 | `customfield_10803` | Customer Names               | Custom   | Customer name(s) associated with the issue. |
 | `customfield_18505` | Project Page                 | Custom   | Project page reference or link. |
 | `versions`          | Affects Version/s            | Standard | Version(s) affected by the issue (not a custom field). |
-| `customfield_16201` | (custom field 16201)          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
-| `customfield_29601` | Business Impact               | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
-| `customfield_15900` | (custom field 15900)          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
-| `customfield_15901` | (custom field 15901)          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
+| `customfield_16201` | Business Impact          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
+| `customfield_29601` | Type of Request               | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
+| `customfield_15900` | Priority from Customer Care          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
+| `customfield_15901` | Severity from Customer Care          | Custom   | Copy from ACSD to ACP2E; use raw value from response. |
 
 ## How to read
 
@@ -85,10 +85,10 @@ When creating ACP2E from ACSD, extract these from the ACSD issue’s `fields`:
 | Customer Names | `customfield_10803` | string or formatted list |
 | Project Page | `customfield_18505` | use raw value from response |
 | Affects Version/s | `versions` | each item’s `name` (e.g. `"2.4.7-p8"`) |
-| customfield_16201 | `customfield_16201` | use raw value from response |
-| Business Impact | `customfield_29601` | use raw value from response |
-| customfield_15900 | `customfield_15900` | use raw value from response |
-| customfield_15901 | `customfield_15901` | use raw value from response |
+| Business Impact | `customfield_16201` | use raw value from response |
+| Type of Request | `customfield_29601` | use raw value from response |
+| Priority from Customer Care | `customfield_15900` | use raw value from response |
+| Severity from Customer Care | `customfield_15901` | use raw value from response |
 
 **Include summary and fields when creating each ACP2E ticket:** (1) Use **`acp2e.md` ISSUE** as the ACP2E ticket’s `summary` (do not use ACSD summary in ticket content). (2) **Customer Request:** pass all eight fields from ACSD to **`create_jira_issue`**. **Backport Request:** pass the same fields **except** `customfield_18505` (Project Page)—omit Project Page on the Backport Request. (3) **Fill the Jira Bug Report Template with content from `acp2e.md` only** and use that as the ACP2E `description`; do not refer any content from ACSD in the description (no "Source: ACSD", no ACSD link, no ACSD-sourced Attachments/Technical Details). (4) Create **two** tickets: first with `issue_type` **"Customer Request"**, second with `issue_type` **"Backport Request"**—same summary and description; Customer Request gets all eight fields, Backport Request gets seven (no customfield_18505).
 
@@ -108,10 +108,10 @@ When creating ACP2E from ACSD, extract these from the ACSD issue’s `fields`:
 | Customer Names              | `issue["fields"].get("customfield_10803")` | Customer Names  |
 | Project Page                | `issue["fields"].get("customfield_18505")` | Project Page |
 | Affects Version/s           | `issue["fields"].get("versions")`          | Affects Version/s |
-| customfield_16201 | `issue["fields"].get("customfield_16201")` | customfield_16201 |
-| Business Impact | `issue["fields"].get("customfield_29601")` | Business Impact |
-| customfield_15900 | `issue["fields"].get("customfield_15900")` | customfield_15900 |
-| customfield_15901 | `issue["fields"].get("customfield_15901")` | customfield_15901 |
+| Business Impact | `issue["fields"].get("customfield_16201")` | Business Impact |
+| Type of Request | `issue["fields"].get("customfield_29601")` | Type of Request |
+| Priority from Customer Care | `issue["fields"].get("customfield_15900")` | Priority from Customer Care |
+| Severity from Customer Care | `issue["fields"].get("customfield_15901")` | Severity from Customer Care |
 
 ### get_jira_issue: pass `fields` for ACSD→ACP2E
 
@@ -132,9 +132,9 @@ When calling **create_jira_issue** for ACP2E, pass the **payload from `get_jira_
 | `customfield_10803`   | `fields.customfield_10803`  | string (e.g. `"Asics Corporation"`) |
 | `customfield_18505`   | `fields.customfield_18505`  | Project Page — use raw value from ACSD response. **Omit for Backport Request** (include only for Customer Request). |
 | `versions`            | `fields.versions`           | array of version objects (e.g. `[{"id": "321926", "name": "2.4.7-p8"}]`) |
-| `customfield_16201`   | `fields.customfield_16201`  | pass full payload from get_jira_issue (if option type, include option id) |
-| `customfield_29601`   | `fields.customfield_29601`  | Business Impact — pass full payload from get_jira_issue (if option type, include option id) |
-| `customfield_15900`   | `fields.customfield_15900`  | pass full payload from get_jira_issue (if option type, include option id) |
-| `customfield_15901`   | `fields.customfield_15901`  | pass full payload from get_jira_issue (if option type, include option id) |
+| `customfield_16201`   | `fields.customfield_16201`  | Business Impact — pass full payload from get_jira_issue (if option type, include option id) |
+| `customfield_29601`   | `fields.customfield_29601`  | Type of Request — pass full payload from get_jira_issue (if option type, include option id) |
+| `customfield_15900`   | `fields.customfield_15900`  | Priority from Customer Care — pass full payload from get_jira_issue (if option type, include option id) |
+| `customfield_15901`   | `fields.customfield_15901`  | Severity from Customer Care — pass full payload from get_jira_issue (if option type, include option id) |
 
 When creating ACP2E, use **`acp2e.md` ISSUE** as the ACP2E `summary` (do not refer ACSD content). Use the **exact payload** from `get_jira_issue` for the custom/version fields—including option ids for option-type fields—without transforming or stringifying. **Create two ACP2E tickets:** (1) **Customer Request** — same summary, description, and all eight fields (including `customfield_18505`). (2) **Backport Request** — same summary and description, but **omit `customfield_18505`** (Project Page); pass only the other seven fields. **Use the Jira Bug Report Template when creating ACP2E:** fill the template with content from `acp2e.md` only; do not refer any content from ACSD in the ticket description.
