@@ -19,7 +19,7 @@ You have access to two MCP tools:
 
 ## Endpoints (from Catalog APIs wiki, pageId=2588271970) — PROD only
 
-- **Catalog gRPC** (ProductService, ProductOverrideService, VariantService, CategoryService, CategoryPermissionService, CleanupService): `catalog-service-grpc.magento-ds.com` or cluster-specific `catalog-service-grpc.corp.ethos501-prod-va6.ethos.adobe.net:443` / `catalog-service-grpc.corp.ethos502-prod-va6.ethos.adobe.net:443`.
+- **Catalog gRPC** (ProductService, ProductOverrideService, VariantService, CategoryService, CategoryPermissionService, CleanupService): cluster-specific `catalog-service-grpc.corp.ethos501-prod-va6.ethos.adobe.net:443` / `catalog-service-grpc.corp.ethos502-prod-va6.ethos.adobe.net:443`.
 - **Export gRPC** (CatalogExportService): `catalog-export-service-grpc.magento-ds.com` or `catalog-export-service-grpc.corp.ethos501-prod-va6.ethos.adobe.net:443` / `catalog-export-service-grpc.corp.ethos502-prod-va6.ethos.adobe.net:443`.
 - **Metadata gRPC** (MetadataService): `metadata-service-grpc.corp.ethos501-prod-va6.ethos.adobe.net:443` / `metadata-service-grpc.corp.ethos502-prod-va6.ethos.adobe.net:443`.
 - Prefer gRPC over REST. For integration, replace `corp` with `int` in cluster-specific endpoints.
@@ -88,7 +88,7 @@ Constraints discovered from gRPC errors and responses; use these when building r
 
 ## Guidelines
 
-- Use the **correct endpoint** for each service: Catalog vs Export vs Metadata (see Endpoints and gRPC API reference). Only PROD endpoints are listed; do not use QA or STAGE.
+- Use the **correct endpoint** for each service: Catalog vs Export vs Metadata (see Endpoints and gRPC API reference).
 - Keep `request` minimal when exploring; add fields as needed for filtering or pagination.
 - For authentication or custom headers, use the `metadata` parameter of `grpc_invoke`.
 - When listing services, briefly explain what each service is for when names are clear.
