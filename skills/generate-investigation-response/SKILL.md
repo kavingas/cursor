@@ -20,7 +20,7 @@ Use this skill when generating support responses or Jira comments from investiga
 **Create all new files under a new folder** in the workspace root.
 
 1. **Output root**: Create `investigation-output/` in the workspace root (or use a named folder such as `investigation-output-{ticket-id}` if a ticket ID is known). All generated files go under this folder.
-2. **Images folder**: Create `investigation-output/images/`. Copy **all images** referenced in `dyn.md` and `find.md` (e.g. `![alt](image.png)`) into this folder. In generated markdown, reference them as `images/<filename>` so the output folder is self-contained.
+2. **Images folder**: Create `investigation-output/images/`. Copy **all images** referenced in `dyn.md` and `find.md` (e.g. `![alt](image.png)`) into this folder. In **markdown** outputs (e.g. `dyn_customer.md`), reference images as `images/<filename>`. In **wiki** outputs (`jira_findings.wiki`, `jira_internal.wiki`), reference images as `!<filename>|width=900!` with no folder path (e.g. `!image1.png|width=900!`).
 3. **Generated files** (all under `investigation-output/`):
    - `dyn_customer.md` — customer-facing response
    - `jira_findings.wiki` — Summary panel for the top of the Jira ticket (Confluence wiki syntax; so anyone viewing the ticket can understand the issue without reading through all comments)
@@ -63,13 +63,17 @@ Replace `<content goes here>` with the investigation summary and findings from `
 **Response structure** (use this Confluence wiki panel format exactly):
 
 ```
-{panel:borderStyle=dashed|borderColor=#cccccc|titleBGColor=#dddddd|bgColor=#deebff}
-* *What is the issue? What happened?*
-[Brief overview of what was investigated.]
-* *What is the root cause?*
-[As much detail as possible about the root cause.]
-* *What are the recommendations?*
-[Recommendations sent to the customer.]
+{panel:title=Conclusion|borderStyle=dashed|borderColor=#cccccc|titleBGColor=#dddddd|bgColor=#ffffce}
+*What was fixed:*
+[It should be a brief overview what we investigated.]
+*How it was resolved:*
+[Add as many details as possible here about the root cause & resolution]
+*Potentially affected areas:*
+[Add affected areas in the application. ]  Set as N/A if not applicable.
+*Documentation Updated:*
+[List any links to any public documentation that was created/updated]. Set as N/A if not applicable.
+*Customer actions required:*
+[Put the recommendation that we sent to the customer here. ]
 {panel}
 ```
 
@@ -84,7 +88,7 @@ Save the final output as `investigation-output/jira_findings.wiki` in Confluence
 **Instructions**: Combine details from **both** `dyn.md` and `find.md` into a single internal document for sharing with the team in internal Jira. This is for internal use only (not customer-facing). **Include all details from find.md** in `jira_internal.wiki` — do not summarize or omit any content from find.md.
 
 - **From dyn.md**: Investigation notes, steps taken, logs, observations, conclusions, and any links or references.
-- **From find.md**: Include **everything** from find.md: all findings, evidence, repro steps, screenshots (reference as `images/<filename>` after copying to `investigation-output/images/`), links to local files (logs, stack traces), external links, code snippets, commands, file paths, and any other content. Nothing from find.md should be left out.
+- **From find.md**: Include **everything** from find.md: all findings, evidence, repro steps, screenshots (reference as `!<filename>|width=900!` with no folder path, e.g. `!image1.png|width=900!`, after copying to `investigation-output/images/`), links to local files (logs, stack traces), external links, code snippets, commands, file paths, and any other content. Nothing from find.md should be left out.
 
 Structure the combined content so the team has full context: issue summary, what was checked, evidence, root cause, and recommendations. Use clear headings and keep technical detail; internal audience may need logs, code references, and screenshots. Do not mention dyn.md, find.md, or any other source file names in the output.
 
@@ -101,6 +105,7 @@ Common wiki markup to use in the internal summary:
 | Panel (box) | `{panel:title=...}...{panel}` or `{panel:borderStyle=dashed}...{panel}` |
 | Monospace/code | `{{code or path}}` |
 | Link | `[URL]` or `[link text|URL]` |
+| Image | `!filename.png|width=900!` (filename only, no folder path) |
 | Horizontal rule | `----` on its own line |
 
 **Suggested structure** for `jira_internal.wiki` (in Confluence wiki syntax). Do not use source file names in headings or body:
@@ -124,7 +129,7 @@ h2. Recommendations
 [What was recommended to the customer and any follow-up for the team.]
 ```
 
-Save as `investigation-output/jira_internal.wiki`. Reference images as `images/<filename>`. Use Confluence wiki syntax throughout so the document is ready to paste into internal Jira/Confluence.
+Save as `investigation-output/jira_internal.wiki`. Reference images as `!<filename>|width=900!` (e.g. `!image1.png|width=900!`) with no folder path. Use Confluence wiki syntax throughout so the document is ready to paste into internal Jira/Confluence.
 
 ---
 
@@ -136,6 +141,6 @@ Save as `investigation-output/jira_internal.wiki`. Reference images as `images/<
 - [ ] Used full content of `dyn.md` and **all details from find.md** in `jira_internal.wiki`; no details omitted from either file
 - [ ] Tone is Support Engineer: courteous, confident, empathetic (customer outputs only)
 - [ ] No first person (I, me) in customer response
-- [ ] Images and links referenced as `images/<filename>` in all outputs
+- [ ] Images in markdown (`dyn_customer.md`) as `images/<filename>`; in wiki (`jira_findings.wiki`, `jira_internal.wiki`) as `!filename.png|width=900!` with no folder path
 - [ ] Output files: `investigation-output/dyn_customer.md`, `investigation-output/jira_findings.wiki`, `investigation-output/jira_internal.wiki`; no output mentions dyn.md, find.md, or other source file names
 - [ ] Jira findings and internal Jira document use Confluence wiki syntax; findings panel is short and scannable (key points only), for display at top of ticket; internal document is detailed for team (see [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html))
